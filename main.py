@@ -11,24 +11,24 @@ import numpy as np
 #######################
 # parameters
 #######################
-input_image = Image.open("inputs/eeh.png")
-iso_type = "2px_base" # choose from formats.py
-transparent_background = True # set to True for RGB; set to False for RGBA
-adjust_color = True # set to True for colorful output; set to False for black & white
-adjusted_color = "white" # any color or RGB hex value like "red", "#2a7eeb", "#A12331" # BLACK DOESN'T WORK
-show_output_img = True # show the output image [for testing]
+base_img = "eeh.png"
+isometry_type = "tester" # choose from formats.py; "2px", "4px", or "steps" recommended
+transparent_background = True # TRUE for transparent background; FALSE for opaque background
+adjust_color = False # TRUE for custom color; FALSE for grayscale
+adjusted_color = "green" # any color or RGB hex value; for example "red", "#2a7eeb", "#A12331"
 
 #######################
 # experimental parameters
 #######################
 custom_colors = False # set to True for create custom colors for output; set to False for black & white
-buffer = 0 # supposed to set buffer around resulting image
-save_im = False # save as png
-
+buffer = 0 # supposed to set buffer around resulting image [not working]
+save_img = False # save as png
+show_output_img = True # show the output image [for testing]
 
 #######################
 # input
 #######################
+input_image = Image.open("inputs/%s" % base_img)
 input_height = input_image.height
 input_width = input_image.width
 
@@ -45,7 +45,7 @@ for y in range(0, input_height):
 # "t_matrix_rows": [[6, -6],[3, 3]] represents a matrix of:
 # 6 -6
 # 3 3
-chosen_format = formats.get_format(iso_type)
+chosen_format = formats.get_format(isometry_type)
 pixelcube = Image.open("formats/" + chosen_format["file_name"])
 
 #######################
@@ -66,7 +66,7 @@ def trans(coords, format):
 #######################
 
 for coords in input_dict:
-    new_coords = trans(coords, iso_type)
+    new_coords = trans(coords, isometry_type)
     adjusted_dict[(new_coords[0], new_coords[1])] = input_dict[coords]
     # adjusted_dict[(coords[0], coords[1])] = input_dict[coords]
 
@@ -119,7 +119,7 @@ for coords in output_dict:
 #######################
 # image colors
 #######################
-max_colors = 10
+max_colors = 256 # im.getcolors(max_colors) returns 0 if (# of colors in img > max_colors)
 # color_example_location, color_list = zip(*im.getcolors(max_colors))
 color_list = list(zip(*im.getcolors(max_colors)))[1] # list of all colors in the image
 color_list = np.asarray(color_list) # convert from list to np array
@@ -197,5 +197,5 @@ if not transparent_background:
     im=im.convert("RGB")
 if show_output_img:
     im.show()
-if save_im:
+if save_img:
     image_png = im.save("pixeltext.png")
