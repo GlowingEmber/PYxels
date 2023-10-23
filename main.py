@@ -1,6 +1,8 @@
 from PIL import Image, ImageOps
 import formats
 import numpy as np
+import struct
+import webcolors
 
 #######################
 # issues/ideas
@@ -14,13 +16,15 @@ import numpy as np
 base_img = "eeh.png"
 isometry_type = "tester" # choose from formats.py; "2px", "4px", or "steps" recommended
 transparent_background = True # TRUE for transparent background; FALSE for opaque background
-adjust_color = False # TRUE for custom color; FALSE for grayscale
-adjusted_color = "green" # any color or RGB hex value; for example "red", "#2a7eeb", "#A12331"
+adjust_color = False # TRUE to set color; FALSE for grayscale
+adjusted_color = "2a7eeb" # any color or RGB hex value; for example "red", "#2a7eeb", "#A12331"
+# ^ "black" not working
 
 #######################
 # experimental parameters
 #######################
-custom_colors = False # set to True for create custom colors for output; set to False for black & white
+use_custom_colors = True # TRUE for custom separate colors; FALSE uses adjusted_color
+color1, color2, color3 = ("ea7e8b","2aae0b","2a0feb") # THESE MUST BE HEX IN THIS FORMAT: ()"ea7e8b","2aae0b","2a0feb")
 buffer = 0 # supposed to set buffer around resulting image [not working]
 save_img = False # save as png
 show_output_img = True # show the output image [for testing]
@@ -68,14 +72,11 @@ def trans(coords, format):
 for coords in input_dict:
     new_coords = trans(coords, isometry_type)
     adjusted_dict[(new_coords[0], new_coords[1])] = input_dict[coords]
-    # adjusted_dict[(coords[0], coords[1])] = input_dict[coords]
 
-# using zip() to unzip 
-x_only = list(zip(*adjusted_dict.keys()))[0]
-y_only = list(zip(*adjusted_dict.keys()))[1]
+x_only = list(zip(*adjusted_dict.keys()))[0] # unzips with zip(*x)
+y_only = list(zip(*adjusted_dict.keys()))[1] # unzips with zip(*x)
 
-# maxes and mins
-x_max, x_min, y_max, y_min = max(x_only), min(x_only), max(y_only), min(y_only)
+x_max, x_min, y_max, y_min = max(x_only), min(x_only), max(y_only), min(y_only) # set maxes and mins
 
 origin_x = 0
 for coords in adjusted_dict.keys():
@@ -98,19 +99,13 @@ for coords in adjusted_dict:
     # not shifted over version (for testing)
     # output_dict[(coords[0], coords[1])] = adjusted_dict[(coords[0], coords[1])]
 
-
 #######################
 # output image
 #######################
 bg_mode = "RGBA"
-
 output_height = (y_max - y_min) + pixelcube.height + (buffer * 2)
 output_width = (x_max - x_min) + pixelcube.width + (buffer * 2)
-
 im = Image.new(mode=bg_mode, size=(output_width,output_height))
-
-# to paste im2 on im1 at 0,0
-# Image.Image.paste(im, two_px, (0, 0))
 
 # add pixelcube onto im
 for coords in output_dict:
@@ -126,13 +121,14 @@ color_list = np.asarray(color_list) # convert from list to np array
 non_alpha_colors = (color_list[:,3] != 0) # filter array to only choose colors that do not have an alpha of 0
 color_array = color_list[non_alpha_colors][:,:3] # create array from filter. REMOVE [:,:3] TO INCLUDE ALPHA IN ARRAY
 
+### create array of lightest colors
 order = np.asarray([])
 for color in color_array:
     order = np.append(order, np.sum(color))
 order = np.argsort(order)[::-1] # [::-1] reverses the list
 color_array_sorted = color_array[order]
 
-### main colors
+### set main three colors
 primary,secondary,tertiary=(0,0,0),(0,0,0),(0,0,0)
 if 0 < len(color_array_sorted):
     primary = tuple(color_array_sorted[0])
@@ -145,7 +141,7 @@ if 2 < len(color_array_sorted):
 # adjust color
 #######################
 
-if adjust_color:
+if adjust_color and not use_custom_colors:
     im = ImageOps.colorize(image=im.convert('L'), black="black", white=adjusted_color)
     if transparent_background:
         im = im.convert("RGBA")
@@ -155,7 +151,7 @@ if adjust_color:
         data[:,:,:][black_background_filter.T] = (0,0,0,0)
         im=Image.fromarray(data)
 
-if custom_colors:
+if use_custom_colors:
     data = np.array(im)
     ########
     # transpose of the data numpy array
@@ -171,9 +167,9 @@ if custom_colors:
     secondary_filter = (alphas != 0) & (reds == secondary[0]) & (greens == secondary[1]) & (blues == secondary[2])
     tertiary_filter = (alphas != 0) & (reds == tertiary[0]) & (greens == tertiary[1]) & (blues == tertiary[2])
 
-    data[:,:,:-1][primary_filter.T] = (255,0,255)
-    data[:,:,:-1][secondary_filter.T] = (255,255,0)
-    data[:,:,:-1][tertiary_filter.T] = (0,255,255)
+    data[:,:,:-1][primary_filter.T] = struct.unpack("BBB", bytes.fromhex(color1))
+    data[:,:,:-1][secondary_filter.T] = struct.unpack("BBB", bytes.fromhex(color2))
+    data[:,:,:-1][tertiary_filter.T] = struct.unpack("BBB", bytes.fromhex(color3))
     im=Image.fromarray(data)
 
 
