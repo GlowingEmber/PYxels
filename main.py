@@ -133,8 +133,9 @@ order = np.argsort(order)[::-1] # [::-1] reverses the list
 color_array_sorted = color_array[order]
 
 ### main colors
-primary,secondary,tertiary=(0,0,0),(0,0,0),(0,0,0) 
-primary = tuple(color_array_sorted[0])
+primary,secondary,tertiary=(0,0,0),(0,0,0),(0,0,0)
+if 0 < len(color_array_sorted):
+    primary = tuple(color_array_sorted[0])
 if 1 < len(color_array_sorted):
     secondary = tuple(color_array_sorted[1])
 if 2 < len(color_array_sorted):
@@ -177,23 +178,20 @@ if custom_colors:
 
 
 #######################
-# display/print
+# testing
 #######################
 
-# for testing
 # print("input height", input_height)
 # print("input width", input_width)
 # print(x_max, x_min, y_max, y_min, origin_x, origin_width)
 # print("output_width", output_width)
 # print("output_height", output_height)
 
-# extras
-# print(sorted(output_dict.keys(), key=lambda coord_key: coord_key[1]))
+# print(sorted(output_dict.keys(), key=lambda coord_key: coord_key[1])) # extras
 
 #######################
-# other
+# apply parameters
 #######################
-
 
 if not transparent_background:
     im=im.convert("RGB")
