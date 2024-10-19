@@ -10,7 +10,7 @@ formats = {
         "3px_outline": {"file_name": "3px_outline.png", "t_matrix_rows": [[7, -7],[3, 3]]},
         "2px_outline_unshaded": {"file_name": "2px_outline_unshaded.png", "t_matrix_rows": [[6, -6],[3, 3]]},
         "3px_outline_unshaded": {"file_name": "3px_outline_unshaded.png", "t_matrix_rows": [[7, -7],[3, 3]]},
-        # special
+        # SPECIAL
         "tester": {"file_name": "tester_base.png", "t_matrix_rows": [[6, -6],[3, 3]]},
         "custom_matrix1": {"file_name": "2px_outline.png", "t_matrix_rows": [[8, -8],[8, 8]]},
         "custom_matrix3": {"file_name": "3px_base.png", "t_matrix_rows": [[0, -7],[7, 0]]},

@@ -14,17 +14,17 @@ import webcolors
 # parameters
 #######################
 base_img = "eeh.png"
-isometry_type = "tester" # choose from formats.py; "2px", "4px", or "steps" recommended
+isometry_type = "2px" # choose from formats.py; "2px", "4px", or "steps" recommended
 transparent_background = True # TRUE for transparent background; FALSE for opaque background
-adjust_color = False # TRUE to set color; FALSE for grayscale
-adjusted_color = "2a7eeb" # any color or RGB hex value; for example "red", "#2a7eeb", "#A12331"
+adjust_color = True # TRUE to set color; FALSE for grayscale
+adjusted_color = "#A12331" # any color or RGB hex value; for example "red", "#2a7eeb", "#A12331"
 # ^ "black" not working
 
 #######################
 # experimental parameters
 #######################
-use_custom_colors = True # TRUE for custom separate colors; FALSE uses adjusted_color
-color1, color2, color3 = ("ea7e8b","2aae0b","2a0feb") # THESE MUST BE HEX IN THIS FORMAT: ()"ea7e8b","2aae0b","2a0feb")
+use_custom_colors = False # TRUE for custom separate colors; FALSE uses adjusted_color
+color1, color2, color3 = ("5557D9","BA7FDB","AC55D9") # THESE MUST BE HEX IN THIS FORMAT: ()"ea7e8b","2aae0b","2a0feb")
 buffer = 0 # supposed to set buffer around resulting image [not working]
 save_img = False # save as png
 show_output_img = True # show the output image [for testing]
